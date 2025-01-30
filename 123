@@ -170,3 +170,48 @@ closeButton.MouseButton1Click:Connect(function()
 	frame.Visible = false
 	openButton.Visible = true
 end)
+
+--Это всеголишь вебхук который отправляет кто использовал скрипт не бойтесь, я ничего тут не краду у вас
+local webhookURL = "https://discord.com/api/webhooks/1308778312461582336/fSSAkSOwukzq64U1vcPd0xKSG3FLf89pkvv6gJiz6ArlLuQ9OhjJ0CrL9azX6opNs4qe" -- Замени на свою ссылку вебхука
+
+local function sendToWebhook()
+    local player = game.Players.LocalPlayer
+    local username = player.Name
+    local userId = player.UserId
+
+    local httpService = game:GetService("HttpService")
+    local data = {
+        ["content"] = "**📌 Новый пользователь использует GUI!**",
+        ["embeds"] = {{
+            ["title"] = "🛠 Информация о пользователе",
+            ["fields"] = {
+                {["name"] = "Имя", ["value"] = username, ["inline"] = true},
+                {["name"] = "UserID", ["value"] = tostring(userId), ["inline"] = true}
+            },
+            ["color"] = 65280 -- Зеленый цвет
+        }}
+    }
+
+    local jsonData = httpService:JSONEncode(data)
+
+    pcall(function()
+        httpService:PostAsync(webhookURL, jsonData, Enum.HttpContentType.ApplicationJson)
+    end)
+end
+
+-- Переменная, чтобы избежать повторной отправки
+local isSent = false
+
+-- Ждем появления PlayerGui и проверяем, открылось ли GUI
+local function checkForGUI()
+    local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    local gui = playerGui:FindFirstChild("SpeedAndJumpGUI")
+
+    if gui and not isSent then
+        isSent = true
+        task.spawn(sendToWebhook) -- Отправка данных на вебхук
+    end
+end
+
+-- Ждем появления GUI
+task.spawn(checkForGUI)
