@@ -45,7 +45,7 @@ local jumpValue = 10
 local SpeedSlider = Tab:CreateSlider({
    Name = "Speed",
    Range = {0, 100},
-   Increment = 10,
+   Increment = 16,
    Suffix = "Speed",
    CurrentValue = speedValue,
    Flag = "SpeedFlag",
@@ -55,9 +55,9 @@ local SpeedSlider = Tab:CreateSlider({
 })
 
 local JumpSlider = Tab:CreateSlider({
-   Name = "Jump",
+   Name = "Jump (Doesn't work in some games)",
    Range = {0, 100},
-   Increment = 10,
+   Increment = 50,
    Suffix = "Jump",
    CurrentValue = jumpValue,
    Flag = "JumpFlag",
