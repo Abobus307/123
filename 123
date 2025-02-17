@@ -39,8 +39,8 @@ local Window = Rayfield:CreateWindow({
 
 local Tab = Window:CreateTab("Change tab", 4483362458)
 
-local speedValue = 10
-local jumpValue = 10
+local speedValue = 16
+local jumpValue = 50
 
 local SpeedSlider = Tab:CreateSlider({
    Name = "Speed",
