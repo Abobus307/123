@@ -39,13 +39,13 @@ local Window = Rayfield:CreateWindow({
 
 local Tab = Window:CreateTab("Change tab", 4483362458)
 
-local speedValue = 1
-local jumpValue = 1
+local speedValue = 16
+local jumpValue = 50
 
 local SpeedSlider = Tab:CreateSlider({
    Name = "Speed",
    Range = {0, 100},
-   Increment = 16,
+   Increment = 1,
    Suffix = "Velocity",
    CurrentValue = speedValue,
    Flag = "SpeedFlag",
@@ -57,7 +57,7 @@ local SpeedSlider = Tab:CreateSlider({
 local JumpSlider = Tab:CreateSlider({
    Name = "Jump (Doesn't work in some games)",
    Range = {0, 100},
-   Increment = 50,
+   Increment = 1,
    Suffix = "Height",
    CurrentValue = jumpValue,
    Flag = "JumpFlag",
