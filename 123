@@ -1,285 +1,81 @@
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
---------------------------------------------------
--- Создаём единый ScreenGui для всех UI
---------------------------------------------------
-local screenGui = Instance.new("ScreenGui")
-screenGui.Parent = player:WaitForChild("PlayerGui")
-screenGui.Name = "SpeedAndJumpGUI"
+Rayfield:Notify({
+   Title = "Hello!",
+   Content = "Enjoy the script :)",
+   Duration = 6.5,
+   Image = 4483362458,
+})
 
---------------------------------------------------
--- GUI для изменения скорости и прыжка
---------------------------------------------------
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 200, 0, 150)
-frame.Position = UDim2.new(0.5, -100, 0.5, -75)
-frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-frame.Parent = screenGui
-frame.Visible = false
+local Window = Rayfield:CreateWindow({
+   Name = "Change jump and speed Script by Вася2",
+   Icon = 0,
+   LoadingTitle = "Jump And Speed",
+   LoadingSubtitle = "By Вася2",
+   Theme = "Default",
+   DisableRayfieldPrompts = true,
+   DisableBuildWarnings = true,
+   ConfigurationSaving = {
+      Enabled = false,
+      FolderName = nil,
+      FileName = "Vasia2 Hub"
+   },
+   Discord = {
+      Enabled = true,
+      Invite = "BxvGxzDB",
+      RememberJoins = true
+   },
+   KeySystem = true,
+   KeySettings = {
+      Title = "Vasia2",
+      Subtitle = "Key System",
+      Note = "Join to discord server for key: https://discord.gg/BxvGxzDB",
+      FileName = "Key",
+      SaveKey = true,
+      GrabKeyFromSite = false,
+      Key = {"Vasia2Top"}
+   }
+})
 
--- Возможность перемещения окна
-local dragging = false
-local dragInput, dragStart, startPos
+local Tab = Window:CreateTab("Change tab", 4483362458)
 
-frame.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 then
-		dragging = true
-		dragStart = input.Position
-		startPos = frame.Position
-		input.Changed:Connect(function()
-			if input.UserInputState == Enum.UserInputState.End then
-				dragging = false
-			end
-		end)
-	end
-end)
+local speedValue = 10
+local jumpValue = 10
 
-frame.InputChanged:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseMovement then
-		dragInput = input
-	end
-end)
+local SpeedSlider = Tab:CreateSlider({
+   Name = "Speed",
+   Range = {0, 100},
+   Increment = 10,
+   Suffix = "Speed",
+   CurrentValue = speedValue,
+   Flag = "SpeedFlag",
+   Callback = function(Value)
+      speedValue = Value
+   end,
+})
 
-local userInputService = game:GetService("UserInputService")
-userInputService.InputChanged:Connect(function(input)
-	if input == dragInput and dragging then
-		local delta = input.Position - dragStart
-		frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-	end
-end)
+local JumpSlider = Tab:CreateSlider({
+   Name = "Jump",
+   Range = {0, 100},
+   Increment = 10,
+   Suffix = "Jump",
+   CurrentValue = jumpValue,
+   Flag = "JumpFlag",
+   Callback = function(Value)
+      jumpValue = Value
+   end,
+})
 
--- Кнопка открытия параметров (изначально скрыта до ввода ключа)
-local openButton = Instance.new("TextButton")
-openButton.Size = UDim2.new(0, 150, 0, 50)
-openButton.Position = UDim2.new(1, -160, 0.5, -25)
-openButton.AnchorPoint = Vector2.new(1, 0.5)
-openButton.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
-openButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-openButton.Font = Enum.Font.SourceSans
-openButton.TextSize = 16
-openButton.Text = "Открыть параметры"
-openButton.Parent = screenGui
-openButton.Visible = false  -- показывается только после ввода правильного ключа
-
--- Кнопка закрытия окна параметров
-local closeButton = Instance.new("TextButton")
-closeButton.Size = UDim2.new(0, 30, 0, 30)
-closeButton.Position = UDim2.new(1, -1, 0, -25)
-closeButton.AnchorPoint = Vector2.new(1, 0)
-closeButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
-closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-closeButton.Font = Enum.Font.SourceSans
-closeButton.TextSize = 22
-closeButton.Text = "X"
-closeButton.Parent = frame
-
--- Заголовок окна параметров
-local speedJumpTitle = Instance.new("TextLabel")
-speedJumpTitle.Size = UDim2.new(1, 0, 0, 30)
-speedJumpTitle.Position = UDim2.new(0, 0, 0, 0)
-speedJumpTitle.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-speedJumpTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-speedJumpTitle.Font = Enum.Font.SourceSansBold
-speedJumpTitle.Text = "Настройки"
-speedJumpTitle.TextSize = 18
-speedJumpTitle.Parent = frame
-
--- Поле для ввода скорости
-local speedLabel = Instance.new("TextLabel")
-speedLabel.Size = UDim2.new(1, 0, 0, 20)
-speedLabel.Position = UDim2.new(0, 0, 0, 40)
-speedLabel.BackgroundTransparency = 1
-speedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-speedLabel.Font = Enum.Font.SourceSans
-speedLabel.TextSize = 16
-speedLabel.Text = "Скорость"
-speedLabel.Parent = frame
-
-local speedBox = Instance.new("TextBox")
-speedBox.Size = UDim2.new(1, -10, 0, 20)
-speedBox.Position = UDim2.new(0, 5, 0, 65)
-speedBox.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
-speedBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-speedBox.Font = Enum.Font.SourceSans
-speedBox.PlaceholderText = "Введите скорость (макс 100)"
-speedBox.Text = ""
-speedBox.TextSize = 14
-speedBox.Parent = frame
-
--- Поле для ввода прыжка
-local jumpLabel = Instance.new("TextLabel")
-jumpLabel.Size = UDim2.new(1, 0, 0, 20)
-jumpLabel.Position = UDim2.new(0, 0, 0, 90)
-jumpLabel.BackgroundTransparency = 1
-jumpLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-jumpLabel.Font = Enum.Font.SourceSans
-jumpLabel.TextSize = 16
-jumpLabel.Text = "Прыжок"
-jumpLabel.Parent = frame
-
-local jumpBox = Instance.new("TextBox")
-jumpBox.Size = UDim2.new(1, -10, 0, 20)
-jumpBox.Position = UDim2.new(0, 5, 0, 115)
-jumpBox.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
-jumpBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-jumpBox.Font = Enum.Font.SourceSans
-jumpBox.PlaceholderText = "Введите прыжок (макс 100)"
-jumpBox.Text = ""
-jumpBox.TextSize = 14
-jumpBox.Parent = frame
-
--- Функция обновления характеристик игрока
-local function updatePlayerStats()
-	local character = player.Character or player.CharacterAdded:Wait()
-	local humanoid = character:FindFirstChildOfClass("Humanoid")
-	if humanoid then
-		local speed = tonumber(speedBox.Text)
-		if speed and speed > 0 and speed <= 100 then
-			humanoid.WalkSpeed = speed
-		else
-			speedBox.Text = "Неверное значение"
-		end
-
-		local jump = tonumber(jumpBox.Text)
-		if jump and jump > 0 and jump <= 100 then
-			humanoid.JumpPower = jump
-		else
-			jumpBox.Text = "Неверное значение"
-		end
-	end
-end
-
-speedBox.FocusLost:Connect(function(enterPressed)
-	if enterPressed then
-		updatePlayerStats()
-	end
-end)
-
-jumpBox.FocusLost:Connect(function(enterPressed)
-	if enterPressed then
-		updatePlayerStats()
-	end
-end)
-
-openButton.MouseButton1Click:Connect(function()
-	frame.Visible = true
-	openButton.Visible = false
-end)
-
-closeButton.MouseButton1Click:Connect(function()
-	frame.Visible = false
-	openButton.Visible = true
-end)
-
---------------------------------------------------
--- Ключевая система (без ESP)
---------------------------------------------------
--- Изменяем размер окна для ключа, чтобы добавить кнопку «Получить ключ»
-local keyFrame = Instance.new("Frame")
-keyFrame.Size = UDim2.new(0, 350, 0, 260)
-keyFrame.Position = UDim2.new(0.5, -175, 0.5, -130)
-keyFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-keyFrame.BorderSizePixel = 0
-keyFrame.Parent = screenGui
-
-local keyUICorner = Instance.new("UICorner")
-keyUICorner.CornerRadius = UDim.new(0, 10)
-keyUICorner.Parent = keyFrame
-
-local keyTitle = Instance.new("TextLabel")
-keyTitle.Size = UDim2.new(1, 0, 0.3, 0)
-keyTitle.Position = UDim2.new(0, 0, 0, 0)
-keyTitle.Text = "🔑 Введите ключ доступа"
-keyTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-keyTitle.BackgroundTransparency = 1
-keyTitle.Font = Enum.Font.GothamBold
-keyTitle.TextScaled = true
-keyTitle.Parent = keyFrame
-
--- Поле для ввода ключа
-local inputBox = Instance.new("TextBox")
-inputBox.Size = UDim2.new(0.8, 0, 0.2, 0)
-inputBox.Position = UDim2.new(0.1, 0, 0.35, 0)
-inputBox.PlaceholderText = "Введите ключ..."
-inputBox.Text = ""
-inputBox.TextScaled = true
-inputBox.Font = Enum.Font.Gotham
-inputBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-inputBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-inputBox.Parent = keyFrame
-
-local inputCorner = Instance.new("UICorner")
-inputCorner.CornerRadius = UDim.new(0, 8)
-inputCorner.Parent = inputBox
-
--- Кнопка "Ввести" для проверки ключа
-local enterButtonKey = Instance.new("TextButton")
-enterButtonKey.Size = UDim2.new(0.6, 0, 0.15, 0)
-enterButtonKey.Position = UDim2.new(0.2, 0, 0.58, 0)
-enterButtonKey.Text = "✅ Ввести"
-enterButtonKey.TextScaled = true
-enterButtonKey.Font = Enum.Font.GothamBold
-enterButtonKey.BackgroundColor3 = Color3.fromRGB(30, 130, 30)
-enterButtonKey.TextColor3 = Color3.fromRGB(255, 255, 255)
-enterButtonKey.Parent = keyFrame
-
-local buttonCorner = Instance.new("UICorner")
-buttonCorner.CornerRadius = UDim.new(0, 8)
-buttonCorner.Parent = enterButtonKey
-
-enterButtonKey.MouseEnter:Connect(function()
-	enterButtonKey.BackgroundColor3 = Color3.fromRGB(40, 180, 40)
-end)
-enterButtonKey.MouseLeave:Connect(function()
-	enterButtonKey.BackgroundColor3 = Color3.fromRGB(30, 130, 30)
-end)
-
--- Кнопка "Получить ключ" для копирования ссылки
-local copyKeyButton = Instance.new("TextButton")
-copyKeyButton.Size = UDim2.new(0.6, 0, 0.15, 0)
-copyKeyButton.Position = UDim2.new(0.2, 0, 0.75, 0)
-copyKeyButton.Text = "Получить ключ"
-copyKeyButton.TextScaled = true
-copyKeyButton.Font = Enum.Font.GothamBold
-copyKeyButton.BackgroundColor3 = Color3.fromRGB(30, 130, 30)
-copyKeyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-copyKeyButton.Parent = keyFrame
-
-local copyKeyCorner = Instance.new("UICorner")
-copyKeyCorner.CornerRadius = UDim.new(0, 8)
-copyKeyCorner.Parent = copyKeyButton
-
-copyKeyButton.MouseEnter:Connect(function()
-	copyKeyButton.BackgroundColor3 = Color3.fromRGB(40, 180, 40)
-end)
-copyKeyButton.MouseLeave:Connect(function()
-	copyKeyButton.BackgroundColor3 = Color3.fromRGB(30, 130, 30)
-end)
-
-copyKeyButton.MouseButton1Click:Connect(function()
-	if setclipboard then
-		setclipboard("https://discord.gg/kpk9djRFaP")
-		copyKeyButton.Text = "Ссылка скопирована!"
-		wait(2)
-		copyKeyButton.Text = "Получить ключ"
-	else
-		warn("Функция setclipboard недоступна")
-	end
-end)
-
--- Функция проверки ключа
-local function checkCode()
-	if inputBox.Text == "Vasia2Sigma" then
-		keyFrame.Visible = false
-		openButton.Visible = true
-	else
-		inputBox.Text = "❌ Неверный ключ!"
-		inputBox.TextColor3 = Color3.fromRGB(255, 0, 0)
-		wait(1)
-		inputBox.Text = ""
-		inputBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-	end
-end
-
-enterButtonKey.MouseButton1Click:Connect(checkCode)
+local Button = Tab:CreateButton({
+   Name = "Change jump and speed",
+   Callback = function()
+      local player = game.Players.LocalPlayer
+      if player and player.Character then
+         local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+         if humanoid then
+            humanoid.WalkSpeed = speedValue
+            humanoid.JumpPower = jumpValue
+         end
+      end
+   end,
+})
